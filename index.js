@@ -136,7 +136,7 @@ class EleventyPluginRollup {
     // resolve to absolute, since rollup uses absolute paths
     src = path.resolve(src);
 
-    if (filesAcrossAllBundles.get(src) !== this) {
+    if (filesAcrossAllBundles.has(src) && filesAcrossAllBundles.get(src) !== this) {
       console.warn(
         `eleventy-plugin-rollup warning: ${src} is used in multiple bundles, this might lead to unwanted sideeffects!`
       );

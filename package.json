@@ -1,12 +1,26 @@
 {
   "name": "eleventy-plugin-rollup",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "A plugin for @11ty/eleventy to offer an integrated build process with rollup.",
   "main": "index.js",
-  "scripts": {
+  "scripts": {},
+  "keywords": [
+    "rollup",
+    "11ty",
+    "eleventy",
+    "bundle",
+    "ssg"
+  ],
+  "author": {
+    "name": "Raphael Höser",
+    "email": "raphael@hoeser.dev",
+    "url": "https://hoeser.dev"
   },
-  "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Snapstromegon/eleventy-plugin-rollup"
+  },
+  "bugs": "https://github.com/Snapstromegon/eleventy-plugin-rollup/issues",
   "license": "ISC",
   "devDependencies": {
     "@11ty/eleventy": "^1.0.1",

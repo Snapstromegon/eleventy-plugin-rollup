@@ -202,13 +202,14 @@ class EleventyPluginRollup {
    */
   async afterBuild() {
     await this.rollupConfigPromise;
+    // Overwrite the rollup input argument to contain the shortcode entrypoints
+    const input = await this.getRollupInputs();
+
     // Return early if no JS was used, since rollup throws on empty inputs
-    if (!Object.keys(this.inputFiles).length) {
+    if ((typeof input === "object" && Object.keys(input).length === 0) || input.length === 0) {
       return;
     }
 
-    // Overwrite the rollup input argument to contain the shortcode entrypoints
-    const input = await this.getRollupInputs();
     const bundle = await rollup.rollup({
       input,
       ...this.rollupConfig,

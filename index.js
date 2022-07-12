@@ -1,7 +1,7 @@
-const rollup = require('rollup');
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
+const rollup = require("rollup");
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
 
 /**
  * @typedef {Object} RollupPluginConfig
@@ -17,7 +17,7 @@ const crypto = require('crypto');
  */
 
 // If a file is used in multiple bundles, chunking might fail
-let filesAcrossAllBundles = new Map();
+let filesAcrossAllBundles;
 
 /**
  * Create an instance for a Rollup Plugin.
@@ -44,7 +44,7 @@ class EleventyPluginRollup {
   constructor(
     eleventyConfig,
     {
-      shortcode = 'rollup',
+      shortcode = "rollup",
       resolveName = this.defaultNamingFunction,
       scriptGenerator = this.defaultScriptGenerator,
       rollupOptions,
@@ -53,8 +53,8 @@ class EleventyPluginRollup {
     this.rollupConfigPromise = this.loadRollupConfig(rollupOptions);
     this.resolveName = resolveName;
     this.scriptGenerator = scriptGenerator;
-    eleventyConfig.on('beforeBuild', () => this.beforeBuild());
-    eleventyConfig.on('afterBuild', () => this.afterBuild());
+    eleventyConfig.on("eleventy.before", () => this.beforeBuild());
+    eleventyConfig.on("eleventy.after", (options) => this.afterBuild(options));
 
     // We want to use "this" in the callback function, so we save the class instance beforehand
     const thisRollupPlugin = this;
@@ -70,13 +70,13 @@ class EleventyPluginRollup {
    */
   async loadRollupConfig(potentialConfig) {
     let config;
-    if (typeof potentialConfig === 'string') {
+    if (typeof potentialConfig === "string") {
       // Load from file
       const configModule = await import(
         path.resolve(process.cwd(), potentialConfig)
       );
       const configOrConfigResolver = configModule.default;
-      if (typeof configOrConfigResolver === 'function') {
+      if (typeof configOrConfigResolver === "function") {
         config = configOrConfigResolver({});
       } else {
         config = configOrConfigResolver;
@@ -96,14 +96,14 @@ class EleventyPluginRollup {
    */
   async defaultNamingFunction(resolvedPath) {
     const fileHash = await new Promise((resolve, reject) => {
-      const hash = crypto.createHash('sha256');
+      const hash = crypto.createHash("sha256");
       // Include file path in hash to handle moved files
       hash.update(resolvedPath);
-      hash.update('---MAGIC ELEVENTY ROLLUP PLUGIN DEVIDER---');
+      hash.update("---MAGIC ELEVENTY ROLLUP PLUGIN DEVIDER---");
       const input = fs.createReadStream(resolvedPath);
-      input.on('error', reject);
-      input.on('data', (chunk) => hash.update(chunk));
-      input.on('close', () => resolve(hash.digest('hex')));
+      input.on("error", reject);
+      input.on("data", (chunk) => hash.update(chunk));
+      input.on("close", () => resolve(hash.digest("hex")));
     });
     // keep original filename in output filename
     const parsedPath = path.parse(resolvedPath);
@@ -136,7 +136,10 @@ class EleventyPluginRollup {
     // resolve to absolute, since rollup uses absolute paths
     src = path.resolve(src);
 
-    if (filesAcrossAllBundles.has(src) && filesAcrossAllBundles.get(src) !== this) {
+    if (
+      filesAcrossAllBundles.has(src) &&
+      filesAcrossAllBundles.get(src) !== this
+    ) {
       console.warn(
         `eleventy-plugin-rollup warning: ${src} is used in multiple bundles, this might lead to unwanted sideeffects!`
       );
@@ -175,7 +178,7 @@ class EleventyPluginRollup {
     await this.rollupConfigPromise;
     const pluginInputs = Object.keys(this.inputFiles);
     // No other inputs defined
-    if (!('input' in this.rollupConfig)) {
+    if (!("input" in this.rollupConfig)) {
       return pluginInputs;
     }
 
@@ -184,7 +187,7 @@ class EleventyPluginRollup {
       return [...this.rollupConfig.input, ...pluginInputs];
     }
     // Input is the complex object form
-    if (typeof this.rollupConfig.input === 'object') {
+    if (typeof this.rollupConfig.input === "object") {
       const res = {};
       Object.assign(res, this.rollupConfig.input);
       for (const entry of pluginInputs) {
@@ -200,7 +203,7 @@ class EleventyPluginRollup {
    * After the "normal" eleventy build is done, we need to start the compile step of rollup.
    * At this point we know all dependencies and can start building.
    */
-  async afterBuild() {
+  async afterBuild({ outputMode }) {
     await this.rollupConfigPromise;
     // Return early if no JS was used, since rollup throws on empty inputs
     if (!Object.keys(this.inputFiles).length) {
@@ -213,12 +216,14 @@ class EleventyPluginRollup {
       input,
       ...this.rollupConfig,
     });
-    await bundle.write({
-      entryFileNames: (chunk) => {
-        return this.inputFiles[chunk.facadeModuleId];
-      },
-      ...this.rollupConfig.output,
-    });
+    if (outputMode === "fs") {
+      await bundle.write({
+        entryFileNames: (chunk) => {
+          return this.inputFiles[chunk.facadeModuleId];
+        },
+        ...this.rollupConfig.output,
+      });
+    }
     await bundle.close();
   }
 }

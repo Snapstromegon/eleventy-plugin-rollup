@@ -23,7 +23,7 @@ npm i -D eleventy-plugin-rollup rollup
 const rollupPlugin = require('eleventy-plugin-rollup');
 
 module.exports = function (eleventyConfig) {
-  eleventyConfig.addPlugin(rollupper, {
+  eleventyConfig.addPlugin(rollupPlugin, {
     rollupOptions: {
       output: {
         format: 'es',
@@ -42,7 +42,7 @@ module.exports = function (eleventyConfig) {
 const rollupPlugin = require('eleventy-plugin-rollup');
 
 module.exports = function (eleventyConfig) {
-  eleventyConfig.addPlugin(rollupper, {
+  eleventyConfig.addPlugin(rollupPlugin, {
     rollupOptions: 'rollup.config.js',
   });
 

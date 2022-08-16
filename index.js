@@ -50,7 +50,10 @@ class EleventyPluginRollup {
       rollupOptions,
     }
   ) {
-    this.rollupConfigPromise = this.loadRollupConfig(rollupOptions);
+    this.rollupConfigPromise = this.loadRollupConfig(
+      rollupOptions,
+      eleventyConfig
+    );
     this.resolveName = resolveName;
     this.scriptGenerator = scriptGenerator;
     eleventyConfig.on('beforeBuild', () => this.beforeBuild());
@@ -68,7 +71,7 @@ class EleventyPluginRollup {
    * @param {import("rollup").RollupOptions | string} potentialConfig
    * @returns {Promise<import("rollup").RollupOptions>} Resolved config
    */
-  async loadRollupConfig(potentialConfig) {
+  async loadRollupConfig(potentialConfig, eleventyConfig) {
     let config;
     if (typeof potentialConfig === 'string') {
       // Load from file
@@ -86,6 +89,20 @@ class EleventyPluginRollup {
     }
 
     this.rollupConfig = config;
+
+    if (this.rollupConfig.watch && this.rollupConfig.watch.include) {
+      let includes = [];
+      if (this.rollupConfig.watch.include[Symbol.iterator]) {
+        includes = this.rollupConfig.watch.include;
+      } else {
+        includes = [this.rollupConfig.watch.include];
+      }
+
+      for (const watchInclude of includes) {
+        eleventyConfig.addWatchTarget(watchInclude);
+      }
+    }
+
     return config;
   }
 
@@ -136,7 +153,10 @@ class EleventyPluginRollup {
     // resolve to absolute, since rollup uses absolute paths
     src = path.resolve(src);
 
-    if (filesAcrossAllBundles.has(src) && filesAcrossAllBundles.get(src) !== this) {
+    if (
+      filesAcrossAllBundles.has(src) &&
+      filesAcrossAllBundles.get(src) !== this
+    ) {
       console.warn(
         `eleventy-plugin-rollup warning: ${src} is used in multiple bundles, this might lead to unwanted sideeffects!`
       );

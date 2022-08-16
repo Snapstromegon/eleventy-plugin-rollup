@@ -75,3 +75,17 @@ You have to provide some kind of rollup config, since there is no default provid
 
 You can't define multiple bundles/configurations inside your rollup config, since we wouldn't know which one to use as the plugin.
 But you can definetely use multiple instances of the plugin.
+
+## Note on watching
+
+The recommended way of watching is adding your dependencies as a watch target to eleventy like this:
+
+```js
+// .eleventy.js
+module.exports = function(eleventyConfig) {
+  eleventyConfig.addWatchTarget("src/js/");
+};
+```
+
+If this doesn't work for you, this plugin does a best-effort approach to parsing rollup.watch.include and adding those targets automatically to the elventy watch targets.
+Please note that this isn't perfect and differs from the rollup behavior and does not support exclusions.

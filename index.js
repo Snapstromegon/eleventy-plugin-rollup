@@ -221,6 +221,11 @@ class EleventyPluginRollup {
    * At this point we know all dependencies and can start building.
    */
   async afterBuild() {
+    // If we run in serverless, we don't want to write to the filesystem
+    if (process.env.ELEVENTY_SERVERLESS) {
+      return;
+    }
+
     await this.rollupConfigPromise;
     // Return early if no JS was used, since rollup throws on empty inputs
     if (!Object.keys(this.inputFiles).length) {

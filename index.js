@@ -1,4 +1,3 @@
-const rollup = require('rollup');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -235,6 +234,9 @@ class EleventyPluginRollup {
 
     // Overwrite the rollup input argument to contain the shortcode entrypoints
     const input = await this.getRollupInputs();
+    // We import here, because we don't need rollup anywhere else and it shouldn't
+    // load in serverless environments.
+    const rollup = require("rollup");
     const bundle = await rollup.rollup({
       input,
       ...this.rollupConfig,

@@ -152,6 +152,7 @@ class EleventyPluginRollup {
 
     // resolve to absolute, since rollup uses absolute paths
     src = path.resolve(src);
+    src = path.relative(".", src);
 
     if (
       filesAcrossAllBundles.has(src) &&
@@ -240,7 +241,8 @@ class EleventyPluginRollup {
     });
     await bundle.write({
       entryFileNames: (chunk) => {
-        return this.inputFiles[chunk.facadeModuleId];
+        const src = path.relative(".", chunk.facadeModuleId);
+        return this.inputFiles[src];
       },
       ...this.rollupConfig.output,
     });

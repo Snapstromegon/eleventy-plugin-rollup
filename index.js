@@ -173,7 +173,7 @@ class EleventyPluginRollup {
 
     // calculate script src after bundling
     const relativePath = path.relative(
-      eleventyInstance.page.outputPath,
+      path.dirname(eleventyInstance.page.outputPath),
       path.join(this.rollupConfig.output.dir, this.inputFiles[src])
     );
 

@@ -24,6 +24,6 @@
   "license": "ISC",
   "devDependencies": {
     "@11ty/eleventy": "^1.0.2",
-    "rollup": "^2.79.1"
+    "rollup": "^3.1.0"
   }
 }

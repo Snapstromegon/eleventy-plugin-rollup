@@ -20,14 +20,14 @@ npm i -D eleventy-plugin-rollup rollup
 #### With explicit config
 
 ```js
-const rollupPlugin = require("eleventy-plugin-rollup");
+const rollupPlugin = require('eleventy-plugin-rollup');
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(rollupPlugin, {
     rollupOptions: {
       output: {
-        format: "es",
-        dir: "_site/js",
+        format: 'es',
+        dir: '_site/js',
       },
     },
   });
@@ -39,11 +39,11 @@ module.exports = function (eleventyConfig) {
 #### With existing config
 
 ```js
-const rollupPlugin = require("eleventy-plugin-rollup");
+const rollupPlugin = require('eleventy-plugin-rollup');
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(rollupPlugin, {
-    rollupOptions: "rollup.config.js",
+    rollupOptions: 'rollup.config.js',
   });
 
   // ...
@@ -58,12 +58,12 @@ module.exports = function (eleventyConfig) {
 
 ### Possible options
 
-| Name            | Default                                                                     | Description                                                                                                                  |
-| :-------------- | :-------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| Name            | Default                                                                     | Description                                                                                                              |
+| :-------------- | :-------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
 | shortcode       | rollup                                                                      | Rollup Plugin shortcode name to use in templates (async shortcode required!)                                             |
 | rollupOptions   | -                                                                           | Your rollup config (either a valid rollup config option or a file path to a rollup config - can only include one config) |
-| resolveName     | _default name with hash_                                                    | Lets you overwrite how the resulting bundles are called.                                                                    |
-| scriptGenerator | `(file, eleventyInstance) => <script src="${file}" type="module"></script>` | Defines how the resulting script tag from the shortcode should work                                                          |
+| resolveName     | _default name with hash_                                                    | Lets you overwrite how the resulting bundles are called.                                                                 |
+| scriptGenerator | `(file, eleventyInstance) => <script src="${file}" type="module"></script>` | Defines how the resulting script tag from the shortcode should work                                                      |
 
 ### Serverless
 
@@ -75,9 +75,9 @@ Since the default entrypoint naming function uses the content of the js file, it
 
 ```js
 eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
-  name: "possum", // The serverless function name from your permalink object
-  functionsDir: "./netlify/functions/",
-  copy: ["path/to/your/js/files/"],
+  name: 'possum', // The serverless function name from your permalink object
+  functionsDir: './netlify/functions/',
+  copy: ['path/to/your/js/files/'],
 });
 ```
 
@@ -92,10 +92,10 @@ eleventyConfig.addPlugin(rollupPlugin, {
     /* ... */
   },
   resolveName: (path) => {
-    const crypto = require("crypto");
-    const hash = crypto.createHash("sha256");
+    const crypto = require('crypto');
+    const hash = crypto.createHash('sha256');
     hash.update(resolvedPath);
-    const fileHash = hash.digest("hex");
+    const fileHash = hash.digest('hex');
     const parsedPath = path.parse(resolvedPath);
     return `${parsedPath.name}-${fileHash.substr(0, 6)}.js`;
   },
@@ -129,7 +129,7 @@ The recommended way of watching is adding your dependencies as a watch target to
 ```js
 // .eleventy.js
 module.exports = function (eleventyConfig) {
-  eleventyConfig.addWatchTarget("src/js/");
+  eleventyConfig.addWatchTarget('src/js/');
 };
 ```
 

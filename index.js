@@ -8,6 +8,8 @@ const crypto = require('crypto');
  * @property {import("rollup").RollupOptions | string} rollupOptions
  * @property {function(string):Promise<string>} resolveName
  * @property {function(string):Promise<string>} scriptGenerator
+ * @property {string} [importScriptsAbsoluteFrom=eleventyConfig.dir.output] Path to use for absolute imports in the generated script. If falsy, the script will use the eleventy output directory.
+ * @property {boolean} [useAbsoluteScriptPaths=false] If true, the script will use absolute paths for the generated script. If false, the script will use relative paths.
  */
 
 /**
@@ -47,8 +49,13 @@ class EleventyPluginRollup {
       resolveName = this.defaultNamingFunction,
       scriptGenerator = this.defaultScriptGenerator,
       rollupOptions,
+      importScriptsAbsoluteFrom,
+      useAbsoluteScriptPaths,
     }
   ) {
+    this.importScriptsAbsoluteFrom =
+      importScriptsAbsoluteFrom || eleventyConfig.dir.output;
+    this.useAbsoluteScriptPaths = useAbsoluteScriptPaths;
     this.rollupConfigPromise = this.loadRollupConfig(
       rollupOptions,
       eleventyConfig
@@ -144,8 +151,9 @@ class EleventyPluginRollup {
    */
   async rollupperShortcode(eleventyInstance, src, isFileRelative = false) {
     // Return early if page is not rendered to filesystem to avoid errors and remove unnecessary files from bundle.
-    if (eleventyInstance.page.outputPath === false)
+    if (eleventyInstance.page.outputPath === false) {
       return;
+    }
 
     await this.rollupConfigPromise;
     // Resolve to the correct relative location
@@ -155,7 +163,7 @@ class EleventyPluginRollup {
 
     // resolve to absolute, since rollup uses absolute paths
     src = path.resolve(src);
-    src = path.relative(".", src);
+    src = path.relative('.', src);
 
     if (
       filesAcrossAllBundles.has(src) &&
@@ -175,13 +183,22 @@ class EleventyPluginRollup {
       this.inputFiles[src] = scriptSrc;
     }
 
-    // calculate script src after bundling
-    const relativePath = path.relative(
-      path.dirname(eleventyInstance.page.outputPath),
-      path.join(this.rollupConfig.output.dir, this.inputFiles[src])
-    );
+    const relativeFrom = this.useAbsoluteScriptPaths
+      ? this.importScriptsAbsoluteFrom
+      : path.dirname(eleventyInstance.page.outputPath);
 
-    return this.scriptGenerator(relativePath, eleventyInstance);
+    // calculate script src after bundling
+    const importPath = path
+      .join(
+        this.useAbsoluteScriptPaths ? '/' : '.',
+        path.relative(
+          relativeFrom,
+          path.join(this.rollupConfig.output.dir, this.inputFiles[src])
+        )
+      )
+      .replaceAll('\\', '/');
+
+    return this.scriptGenerator(importPath, eleventyInstance);
   }
 
   defaultScriptGenerator(filePath, eleventyInstance) {
@@ -240,14 +257,14 @@ class EleventyPluginRollup {
     const input = await this.getRollupInputs();
     // We import here, because we don't need rollup anywhere else and it shouldn't
     // load in serverless environments.
-    const rollup = require("rollup");
+    const rollup = require('rollup');
     const bundle = await rollup.rollup({
       input,
       ...this.rollupConfig,
     });
     await bundle.write({
       entryFileNames: (chunk) => {
-        const src = path.relative(".", chunk.facadeModuleId);
+        const src = path.relative('.', chunk.facadeModuleId);
         return this.inputFiles[src];
       },
       ...this.rollupConfig.output,

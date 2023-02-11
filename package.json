@@ -1,6 +1,6 @@
 {
   "name": "eleventy-plugin-rollup",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "A plugin for @11ty/eleventy to offer an integrated build process with rollup.",
   "main": "index.js",
   "scripts": {},

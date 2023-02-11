@@ -58,12 +58,14 @@ module.exports = function (eleventyConfig) {
 
 ### Possible options
 
-| Name            | Default                                                                     | Description                                                                                                              |
-| :-------------- | :-------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
-| shortcode       | rollup                                                                      | Rollup Plugin shortcode name to use in templates (async shortcode required!)                                             |
-| rollupOptions   | -                                                                           | Your rollup config (either a valid rollup config option or a file path to a rollup config - can only include one config) |
-| resolveName     | _default name with hash_                                                    | Lets you overwrite how the resulting bundles are called.                                                                 |
-| scriptGenerator | `(file, eleventyInstance) => <script src="${file}" type="module"></script>` | Defines how the resulting script tag from the shortcode should work                                                      |
+| Name                      | Default                                                                     | Description                                                                                                              |
+| :------------------------ | :-------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
+| shortcode                 | rollup                                                                      | Rollup Plugin shortcode name to use in templates (async shortcode required!)                                             |
+| rollupOptions             | -                                                                           | Your rollup config (either a valid rollup config option or a file path to a rollup config - can only include one config) |
+| resolveName               | _default name with hash_                                                    | Lets you overwrite how the resulting bundles are called.                                                                 |
+| scriptGenerator           | `(file, eleventyInstance) => <script src="${file}" type="module"></script>` | Defines how the resulting script tag from the shortcode should work                                                      |
+| importScriptsAbsoluteFrom | `eleventyConfig.dir.output`                                                 | Base paths for absolute import. Only used if `useAbsoluteScriptPaths` is true.                                           |
+| useAbsoluteScriptPaths    | false                                                                       | If true, all scripts will use an absolute path for imports.                                                              |
 
 ### Serverless
 

@@ -177,10 +177,10 @@ class EleventyPluginRollup {
       path.join(this.rollupConfig.output.dir, this.inputFiles[src])
     );
 
-    return this.scriptGenerator(relativePath);
+    return this.scriptGenerator(relativePath, eleventyInstance);
   }
 
-  defaultScriptGenerator(filePath) {
+  defaultScriptGenerator(filePath, eleventyInstance) {
     return `<script src="${filePath}" type="module"></script>`;
   }
 

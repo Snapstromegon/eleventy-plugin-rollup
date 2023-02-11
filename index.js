@@ -143,6 +143,7 @@ class EleventyPluginRollup {
    * @returns
    */
   async rollupperShortcode(eleventyInstance, src, isFileRelative = false) {
+    // Return early if page is not rendered to filesystem to avoid errors and remove unnecessary files from bundle.
     if (eleventyInstance.page.outputPath === false)
       return;
 

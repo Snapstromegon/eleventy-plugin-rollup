@@ -143,6 +143,9 @@ class EleventyPluginRollup {
    * @returns
    */
   async rollupperShortcode(eleventyInstance, src, isFileRelative = false) {
+    if (eleventyInstance.page.outputPath === false)
+      return;
+
     await this.rollupConfigPromise;
     // Resolve to the correct relative location
     if (isFileRelative) {
